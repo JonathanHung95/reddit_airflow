@@ -1,11 +1,12 @@
 import praw
 import datetime as dt
 
-def get_posts(subreddit):
+def get_posts(subreddit, hour_ago):
     """
     Function to pull all recent (every hour) posts from a specified subreddit.
 
     subreddit -> Subreddit of interest.
+    hour_ago -> Unix time for an hour ago.
     return -> List of lists [time, id, title, score].
     """
 
@@ -16,10 +17,6 @@ def get_posts(subreddit):
                     user_agent = user_agent)
 
     subreddit = r.subreddit(subreddit)
-    
-    # get the unix time for an hour ago
-
-    hour_ago = (dt.datetime.now() - dt.timedelta(hours = 1)).timestamp()
 
     # pull all posts for the last hour
     # create a list of lists [time, id, title, score]
