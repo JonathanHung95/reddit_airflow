@@ -1,33 +1,38 @@
 import praw
-from psaw import PushshiftAPI
 import datetime as dt
 
 def get_posts(subreddit):
     """
-    Function to pull all recent (24 hours) posts from a specified subreddit.
+    Function to pull all recent (every hour) posts from a specified subreddit.
 
     subreddit -> Subreddit of interest.
-    return -> List of posts for the day.
+    return -> List of lists [time, id, title, score].
     """
 
-    # set up the praw/psaw details
+    # set up the praw details
 
     r = praw.Reddit(client_id = client_id,
                     client_secret = client_secret,
                     user_agent = user_agent)
 
-    api = PushshiftAPI(r)
+    subreddit = r.subreddit(subreddit)
     
-    # set the start_epoch
+    # get the unix time for an hour ago
 
-    today = dt.datetime.today()
-    start_epoch = int(dt.datetime(int(today.year),
-                            int(today.month),
-                            int(today.day)).timestamp())
+    hour_ago = (dt.datetime.now() - dt.timedelta(hours = 1)).timestamp()
 
-    # pull all posts for today
+    # pull all posts for the last hour
+    # create a list of lists [time, id, title, score]
 
-    posts = list(api.search_submissions(after = start_epoch,
-                                        subreddit = subreddit))
+    posts = []
+
+    for submission in subreddit.new(limit = 100):
+        if submission.created_utc > hour_ago:
+            posts.append([submission.created_utc, submission.id, submission.title, submission.score])
+
+        else:
+            # since the postings are in descending order of created time
+            # we can stop looping when we've hit the posts that are older than an hour_ago
+            break
     
     return posts
