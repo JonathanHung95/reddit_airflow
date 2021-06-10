@@ -8,11 +8,6 @@
 4. not entirely sure about this part; do i use glue, athena or quicksight to pull data? probably quicksight and use quicksight to pull data
 	-don't think glue because my table structure is already pretty consistent
 
-tangents:
-1. we're using emr to run the airflow job constantly vs running it on the localhost -> better uptime, "scaling"
-2. IF theres time (omegalul sized IF) -> we can see if theres things to add to expand the project a bit
-
-
 
 to-do list
 1. set up S3 buckets (landing, target, maybe need an archive?)

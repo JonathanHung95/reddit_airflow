@@ -1,0 +1,5 @@
+praw
+pyyaml
+nltk
+airflow
+pyspark
