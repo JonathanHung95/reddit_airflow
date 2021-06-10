@@ -1,7 +1,7 @@
 import praw
 import datetime as dt
 
-def get_posts(subreddit, hour_ago):
+def get_posts(subreddit, hour_ago, client_id, client_secret, user_agent):
     """
     Function to pull all recent (every hour) posts from a specified subreddit.
 

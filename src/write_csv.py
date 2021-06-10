@@ -19,7 +19,7 @@ def write_csv(list_to_write, header, file_name):
 
     # write to csv file
 
-    with open(file_name, "w", newline = "") as file:
+    with open(file_name, "w", newline = "", encoding = "utf-8") as file:
         writer = csv.writer(file)
 
         # write our headers first

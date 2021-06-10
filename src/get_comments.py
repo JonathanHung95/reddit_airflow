@@ -1,7 +1,7 @@
 import praw
 import datetime as dt
 
-def get_comments(subreddit, hour_ago):
+def get_comments(subreddit, hour_ago, client_id, client_secret, user_agent):
     """
     Function to retrieve recent (last hour) comments from a given subreddit.
 
