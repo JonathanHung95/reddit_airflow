@@ -99,6 +99,12 @@ start_pipeline = DummyOperator(task_id = "start_pipeline",
 
 # move data from local -> s3 -> EMR picks up from s3 -> run spark job -> deposit transformed data into s3
 
+scrap_data = PythonOperator(
+    task_id = "scrap_data",
+    provide_context = False,
+    python_callable = reddit_scapper.py
+)
+
 data_to_s3 = PythonOperator(
     dag = dag,
     task_id = "data_to_s3",
