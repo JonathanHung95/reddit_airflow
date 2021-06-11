@@ -2,10 +2,6 @@ import praw
 import datetime as dt
 import csv
 
-from src.get_posts import get_posts
-from src.get_comments import get_comments
-from src.write_csv import write_csv
-
 import yaml
 
 # idea here is to scrap the comments of a given subreddit -> store in a csv file 
@@ -34,7 +30,7 @@ def get_comments(subreddit, hour_ago, client_id, client_secret, user_agent):
 
     comments = []
 
-    for comment in subreddit.comments(limit = 100):
+    for comment in subreddit.comments(limit = 1000):
         if comment.created_utc > hour_ago:
             # manipulate the link_id a bit, we don't want the level (ie. t1_123456 -> 123456)
 
@@ -100,9 +96,6 @@ if __name__ == "__main__":
 
     # scrap the last hour's worth of data
     # for now, we use a small subreddit "EpicSeven"
-
-    posts = get_posts(subreddit, hour_ago, client_id, client_secret, user_agent)
-    write_csv(posts, ["time", "id", "title", "score"], "posts.csv")
 
     comments = get_comments(subreddit, hour_ago, client_id, client_secret, user_agent)
     write_csv(comments, ["time", "comment_id", "link_id", "comment", "score"], "comments.csv")
