@@ -2,23 +2,10 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, lower, col, explode, split
 from pyspark.sql.types import StringType
 
+import argparse
+
 # our goal is to remove columns of no interst, remove ([deleted] and [removed]) comments, change everything to lower case, strip punctuation, get part of speech -> remove everything
 # thats not called a noun
-
-spark = SparkSession.builder.master("yarn").\
-                    .appName("wcd_spark_job")\
-                    .getOrCreate()
-
-# spark configs
-
-spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", "AKIASVOJD6ASMLJIPD2B")
-
-access_id = "AKIASVOJD6ASJKM6GCVL"
-access_key = "QSr40gjCIBffejzbp0kJCpAQHbwq5LHj+b0U+q2l"
-
-# import our csv file
-
-comments_df = spark.read.csv("comments.csv", header = True)
 
 # nltk function to operate on the comments
 # we want to extract just nouns as that would give us the topics that the subreddit is talking about
@@ -53,20 +40,37 @@ def extract_nouns(comment):
 
 spark_extract_nouns = udf(extract_nouns, StringType())
 
-# apply functions to clean up the dataframe + transform 
+# function containing our transformations
 
-comments_df = comments_df.drop("time", "comment_id", "link_id")\
-                    .where("comment != '[deleted]' or comment != '[removed]'")\
-                    .withColumn("lower_comment", lower(col("comment")))
-                    
-new_df = comments_df.withColumn("nouns", spark_extract_nouns(comments_df.lower_comment))
+def transform_data(input_loc, output_loc):
+    comments_df = spark.read.option("header", True).csv(input_loc)
 
-# group the nouns by frequency and that's our actual final data from the spark job
+    comments_df = comments_df.drop("time", "comment_id", "link_id")\
+                        .where("comment != '[deleted]' or comment != '[removed]'")\
+                        .withColumn("lower_comment", lower(col("comment")))
 
-count_df = new_df.withColumn("word", explode(split(col("nouns"), ",")))\
-                    .groupBy("word")\
-                    .count()\
-                    .sort("count", ascending = False)\
-                    .limit(100)
+    new_df = comments_df.withColumn("nouns", spark_extract_nouns(comments_df.lower_comment))
 
-count_df = new_df.withColumn("word", explode(split(col("nouns"), ","))).groupBy("word").count().sort("count", ascending = False).limit(100)
+    # group the nouns by frequency and that's our actual final data from the spark job
+
+    count_df = new_df.withColumn("word", explode(split(col("nouns"), ",")))\
+                        .groupBy("word")\
+                        .count()\
+                        .sort("count", ascending = False)\
+                        .limit(100)
+
+    count_df.write.mode("overwrite").parquet(output_loc)
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type = str, help = "HDFS input", default = "/input")
+    parser.add_argument("--ouput", type = str, help = "HDFS output", default = "/output")
+    args = parser.parse_args()
+
+    spark = SparkSession.builder.\
+                    .appName("wcd_spark_job")\
+                    .getOrCreate()
+
+    transform_data(input_loc = args.input, output_loc = args.output)
+
