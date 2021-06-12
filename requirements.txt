@@ -1,5 +1,4 @@
 praw
 pyyaml
-pyspark
 boto3
 apache-airflow
