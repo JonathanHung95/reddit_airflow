@@ -7,3 +7,4 @@ Data pipeline with the job of:
 3. Utilize spark + EMR to transform the data
 4. Create a simple visualization of the transformed data
 
+![Pipeline Diagram](assets/data_pipeline_diagram.jpg)
