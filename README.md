@@ -1,9 +1,9 @@
 # WCD_DE_Project
 Mid Term pipeline for WCD DE
 
-Figuring out what to do.
+Data pipeline with the job of:
+1. Scrap reddit comment data from a subreddit
+2. Store data in an S3 bucket
+3. Utilize spark + EMR to transform the data
+4. Create a simple visualization of the transformed data
 
-To Do List:
-1. Figure out how to pull all posts/comments from a given subreddit; not sure if i want to actually pull all the comments as well though
-2. Iron out above into a useable format (probably csv?)
-3. Dump it into either an S3 bucket or a GCP bucket cause reasons
