@@ -7,7 +7,6 @@ from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.hooks.S3_hook import S3Hook
 from airflow.operators.python_operator import PythonOperator
-from airflow.operators.bash import BashOperator
 from airflow.providers.amazon.aws.hooks.lambda_function import AwsLambdaHook
 
 from airflow.contrib.operators.emr_create_job_flow_operator \
