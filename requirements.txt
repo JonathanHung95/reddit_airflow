@@ -1,6 +1,4 @@
 praw
 pyyaml
-nltk
-airflow
 pyspark
 boto3
