@@ -2,4 +2,4 @@ praw
 pyyaml
 boto3
 apache-airflow
-apache-airflow-providers-amazon
+apache-airflow-providers-amazon==1.4.0
