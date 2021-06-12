@@ -30,16 +30,17 @@ DEFAULT_ARGS = {
     'email_on_failure': False,
     'email_on_retry': False
 }
-"""
+
 REGION_NAME = "us-east-1"
+
 AWS_ACCESS_KEY_ID = "AKIASVOJD6ASJKM6GCVL"
 AWS_SECRET_ACCESS_KEY = "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"
-"""
+
 BUCKET_NAME = "jonathan-landing-bucket"
-CLUSTER_ID = "j-3QALTZJ7X09MG"
+CLUSTER_ID = "j-2GT7P2DHKTF55"
 
 # helper functions
-"""
+
 def lambda1(ds, **kwargs):
     lambda_client = boto3.client("lambda",
                                     region_name = REGION_NAME,
@@ -62,7 +63,7 @@ def lambda1(ds, **kwargs):
     
     response_1 = hook.invoke_lambda(payload = "null")
     print("Response: ", response_1)
-
+"""
 
 def retrieve_s3_file(**kwargs):
     s3_location = "s3://jonathan-wcd-midterm/landing"
