@@ -54,7 +54,7 @@ def transform_data(input_loc, output_loc):
 
     # create our new data
 
-    count_df.write.mode("overwrite").csv(output_loc + "cleaned_data.csv")
+    count_df.write.mode("overwrite").csv(output_loc)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
