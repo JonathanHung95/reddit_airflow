@@ -8,6 +8,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.hooks.S3_hook import S3Hook
 from airflow.operators.python_operator import PythonOperator
 from airflow.providers.amazon.aws.hooks.lambda_function import AwsLambdaHook
+from airflow.models import Variable
 
 from airflow.contrib.operators.emr_create_job_flow_operator \
         import EmrCreateJobFlowOperator
@@ -66,6 +67,26 @@ def lambda1(ds, **kwargs):
 def retrieve_s3_file(**kwargs):
     s3_location = "s3://jonathan-wcd-midterm/landing"
     kwargs['ti'].xcom_push( key = 's3location', value = s3_location)
+
+# glue crawler function
+
+def crawler_run(**kwargs):
+    client = boto3.client("glue", region_name = REGION_NAME)
+    response = client.start_crawler(
+    Name="jonathan-wcd-midterm"
+    )
+
+# athena partition repair function
+
+def reapir_table(**kwargs):
+    client = boto3.client('athena', region_name = REGION_NAME)
+    queryStart = client.start_query_execution(
+        QueryString = "MSCK REPAIR TABLE " + Variable.get("file_name"),
+        QueryExecutionContext = {
+        "Database": "jonathan-wcd-midterm"
+        }, 
+        ResultConfiguration = { "OutputLocation": "s3://jonathan-wcd-midterm/target/"}
+    )
 
 # spark steps
 
@@ -131,7 +152,6 @@ run_lambda = PythonOperator(
     dag = dag
 )
 
-
 step_adder = EmrAddStepsOperator(
     task_id = "add_steps",
     #job_flow_id = "{{ task_instance.xcom_pull(task_ids='create_cluster', key='return_value') }}",
@@ -153,9 +173,21 @@ step_checker = EmrStepSensor(
     dag=dag,
 )
 
+crawler = PythonOperator(
+    task_id = 'glue_crawler',
+    python_callable=crawler_run,
+    dag=dag
+)
+
+repair = PythonOperator(
+    task_id = 'rapair_athena_table',
+    python_callable=reapir_table,
+    dag=dag
+)
+
 end_pipeline = DummyOperator(
     task_id = "end_pipeline",
     dag = dag
 )
 
-start_pipeline >> run_lambda >> step_adder >> step_checker >> end_pipeline
+start_pipeline >> run_lambda >> step_adder >> step_checker >> crawler >> repair >> end_pipeline
