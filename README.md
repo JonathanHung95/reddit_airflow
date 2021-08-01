@@ -17,7 +17,10 @@ Our goal with this pipeline is to scrap data and transform it into a count of wo
 
 ### Airflow
 
-Airflow runs on an EC2 instance and manages the whole pipeline.
+Airflow runs on an EC2 instance and manages the whole pipeline via our aws_dag.py file.  The DAG does:
+1. Triggers the reddit scrapper function housed in an AWS Lambda
+2. Triggers EMR to take the data in the S3 bucket
+3. Triggers Glue + Athena
 
 ### Lambda Function
 
@@ -35,7 +38,7 @@ The Landing folder is where the Lambda function deposits the scrapped data.  Scr
 
 ### EMR/Spark
 
-We use an EMR cluster to run our Spark job to transform the data ingested from the Landing folder of our S3 bucket.  Note that the EMR cluster needs to be pointed to the bootstrap script in the S3 bucket in order to install extra libraries that do not automatically come with EMR.
+We use an EMR cluster to run our Spark job to transform the data ingested from the Landing folder of our S3 bucket.  Note that the EMR cluster needs to be pointed to the bootstrap script in the S3 bucket in order to install extra libraries that do not automatically come with EMR, otherwise, errors will occur as the required libraries can't be found.
 
 ### Final Parts
 
