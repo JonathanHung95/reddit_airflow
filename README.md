@@ -1,4 +1,4 @@
-# WCD_DE_Project
+# reddit_airflow
 
 Mid Term  data pipeline for WCD DE course.  The overall goal is to build an end-to-end pipeline to process data.
 
